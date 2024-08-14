@@ -3,7 +3,7 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const port = process.env.PORT || 5000;
@@ -33,6 +33,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const db = client.db(`${process.env.DB_USER}`);
+    const userCollection = db.collection("users");
     const productCollection = db.collection("products");
 
     // get product amount
@@ -45,6 +46,54 @@ async function run() {
     app.get("/products", async (req, res) => {
       const products = await productCollection.find().toArray();
       res.send(products);
+    });
+
+     // auth related api
+     app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "365d",
+      });
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        })
+        .send({ success: true });
+    });
+    // Logout
+    app.post("/logout", async (req, res) => {
+      try {
+        res
+          .clearCookie("token", {
+            maxAge: 0,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          })
+          .send({ success: true });
+        console.log("Logout successful");
+      } catch (err) {
+        res.status(500).send(err);
+      }
+    });
+
+    app.put("/register", async (req, res) => {
+      const user = req.body;
+      const isExist = await userCollection.findOne({
+        userEmail: user?.userEmail,
+      });
+      if (isExist)
+        return res.send("Already Exist");
+      const updateDoc = {
+        $set: {
+          ...user,
+        },
+      };
+      const filter = { userEmail: user?.userEmail };
+      const options = { upsert: true };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
     });
 
     console.log(
