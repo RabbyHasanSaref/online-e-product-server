@@ -42,14 +42,8 @@ async function run() {
       res.send({ amount: count });
     });
 
-    // get all products
-    app.get("/products", async (req, res) => {
-      const products = await productCollection.find().toArray();
-      res.send(products);
-    });
-
-     // auth related api
-     app.post("/jwt", async (req, res) => {
+    // auth related api
+    app.post("/jwt", async (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "365d",
@@ -83,8 +77,7 @@ async function run() {
       const isExist = await userCollection.findOne({
         userEmail: user?.userEmail,
       });
-      if (isExist)
-        return res.send("Already Exist");
+      if (isExist) return res.send("Already Exist");
       const updateDoc = {
         $set: {
           ...user,
@@ -93,6 +86,48 @@ async function run() {
       const filter = { userEmail: user?.userEmail };
       const options = { upsert: true };
       const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    //get products count
+    app.get("/getCount", async (req, res) => {
+      const filter = req.query.filter;
+      const search = req.query.search || "";
+      let query = {
+        productName: { $regex: search, $options: "i" },
+      };
+      if (filter) query.category = filter;
+      const count = await productCollection.countDocuments(query);
+      res.send({ count });
+    });
+
+    //get filtered products for filtering and pagination
+    app.get("/products", async (req, res) => {
+      const page = parseFloat(req.query.page);
+      const size = parseFloat(req.query.size);
+      const filter = req.query.filter;
+      const sortByPrice = req.query.sortByPrice;
+      const sortByDate = req.query.sortByDate;
+      const search = req.query.search || "";
+      let query = {
+        productName: { $regex: search, $options: "i" },
+      };
+      if (filter) query.category = filter;
+      let options = {};
+      if (sortByPrice)
+        options = { sort: { price: sortByPrice === "L2H" ? 1 : -1 } };
+      if (sortByDate)
+        options = {
+          sort: {
+            ...options.sort,
+            creationDate: sortByDate === "new" ? -1 : 1,
+          },
+        };
+      const result = await productCollection
+        .find(query, options)
+        .skip(page * size)
+        .limit(size)
+        .toArray();
       res.send(result);
     });
 
