@@ -94,11 +94,19 @@ async function run() {
       const category = req.query.category;
       const brand = req.query.brand;
       const search = req.query.search || "";
+      let priceRange = req.query.priceRange;
+      if (priceRange) {
+        priceRange = priceRange.split(",").map(Number);
+      }
       let query = {
         productName: { $regex: search, $options: "i" },
       };
       if (category) query.category = category;
       if (brand) query.brandName = brand;
+      // Apply price range filter
+      if (priceRange && priceRange.length === 2) {
+        query.price = { $gte: priceRange[0], $lte: priceRange[1] };
+      }
       const count = await productCollection.countDocuments(query);
       res.send({ count });
     });
@@ -112,16 +120,33 @@ async function run() {
       const sortByPrice = req.query.sortByPrice;
       const sortByDate = req.query.sortByDate;
       const search = req.query.search || "";
+
+      let priceRange = req.query.priceRange;
+      if (priceRange) {
+        priceRange = priceRange.split(",").map(Number);
+      }
+
       let query = {
         productName: { $regex: search, $options: "i" },
       };
+
       if (category) query.category = category;
       if (brand) query.brandName = brand;
+
+      // Apply price range filter
+      if (priceRange && priceRange.length === 2) {
+        query.price = { $gte: priceRange[0], $lte: priceRange[1] };
+      }
+
       let options = {};
       if (sortByPrice)
-        options = { sort: { ...options.sort, price: sortByPrice === "L2H" ? 1 : -1 } };
+        options = {
+          ...options.sort,
+          sort: { price: sortByPrice === "L2H" ? 1 : -1 },
+        };
       if (sortByDate)
         options = {
+          ...options.sort,
           sort: {
             creationDate: sortByDate === "new" ? -1 : 1,
           },
@@ -145,9 +170,9 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Hello from Server..");
+  res.send("Hello from ShopEase Server..");
 });
 
 app.listen(port, () => {
-  console.log(`is running on port ${port}`);
+  console.log(`ShopEase is running on port ${port}`);
 });
