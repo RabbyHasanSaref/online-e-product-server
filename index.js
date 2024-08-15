@@ -24,21 +24,21 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Verify Token Middleware
-const verifyToken = async (req, res, next) => {
-  const token = req.cookies?.token;
-  // console.log(token);
-  if (!token) {
-    return res.status(401).send({ message: "unauthorized access" });
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      console.log(err);
-      return res.status(401).send({ message: "unauthorized access" });
-    }
-    req.user = decoded;
-    next();
-  });
-};
+// const verifyToken = async (req, res, next) => {
+//   const token = req.cookies?.token;
+//   // console.log(token);
+//   if (!token) {
+//     return res.status(401).send({ message: "unauthorized access" });
+//   }
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//     if (err) {
+//       console.log(err);
+//       return res.status(401).send({ message: "unauthorized access" });
+//     }
+//     req.user = decoded;
+//     next();
+//   });
+// };
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nrdgddr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -112,7 +112,7 @@ async function run() {
     });
 
     //get products count
-    app.get("/getCount", verifyToken, async (req, res) => {
+    app.get("/getCount", async (req, res) => {
       const category = req.query.category;
       const brand = req.query.brand;
       const search = req.query.search || "";
@@ -134,7 +134,7 @@ async function run() {
     });
 
     //get filtered products for filtering and pagination
-    app.get("/products", verifyToken, async (req, res) => {
+    app.get("/products", async (req, res) => {
       const page = parseFloat(req.query.page);
       const size = parseFloat(req.query.size);
       const category = req.query.category;
