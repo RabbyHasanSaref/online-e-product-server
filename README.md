@@ -24,3 +24,6 @@ cp .env.example .env
 
 # 5. Start the Server
 npm run dev
+
+
+## Now you can start the Server
