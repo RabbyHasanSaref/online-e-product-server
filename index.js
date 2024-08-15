@@ -91,12 +91,14 @@ async function run() {
 
     //get products count
     app.get("/getCount", async (req, res) => {
-      const filter = req.query.filter;
+      const category = req.query.category;
+      const brand = req.query.brand;
       const search = req.query.search || "";
       let query = {
         productName: { $regex: search, $options: "i" },
       };
-      if (filter) query.category = filter;
+      if (category) query.category = category;
+      if (brand) query.brandName = brand;
       const count = await productCollection.countDocuments(query);
       res.send({ count });
     });
@@ -105,21 +107,22 @@ async function run() {
     app.get("/products", async (req, res) => {
       const page = parseFloat(req.query.page);
       const size = parseFloat(req.query.size);
-      const filter = req.query.filter;
+      const category = req.query.category;
+      const brand = req.query.brand;
       const sortByPrice = req.query.sortByPrice;
       const sortByDate = req.query.sortByDate;
       const search = req.query.search || "";
       let query = {
         productName: { $regex: search, $options: "i" },
       };
-      if (filter) query.category = filter;
+      if (category) query.category = category;
+      if (brand) query.brandName = brand;
       let options = {};
       if (sortByPrice)
-        options = { sort: { price: sortByPrice === "L2H" ? 1 : -1 } };
+        options = { sort: { ...options.sort, price: sortByPrice === "L2H" ? 1 : -1 } };
       if (sortByDate)
         options = {
           sort: {
-            ...options.sort,
             creationDate: sortByDate === "new" ? -1 : 1,
           },
         };
