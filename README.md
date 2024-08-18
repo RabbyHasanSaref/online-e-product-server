@@ -1,7 +1,7 @@
 # ShopEase - Server
 
 ## Project Overview
-This repository contains the backend implementation of the ShopEase application, a full-stack single-page web application designed for efficient product browsing. The backend handles data management, user authentication, and API routing to support the core functionalities of the front end, including pagination, searching, categorization, and sorting of products.
+This repository contains the backend implementation of the online e-product application, a full-stack single-page web application designed for efficient product browsing. The backend handles data management, user authentication, and API routing to support the core functionalities of the front end, including pagination, searching, categorization, and sorting of products.
 
 ### Live Site URL: 
 * https://online-e-product.netlify.app/
@@ -10,7 +10,7 @@ This repository contains the backend implementation of the ShopEase application,
 
 ```bash
 # 1. Clone the Repository
-git clone "https://github.com/maybemahdi/ShopEase-Server"
+git clone "https://github.com/RabbyHasanSaref/online-e-product-server.git"
 
 # 2. Navigate to the Project Directory
 cd ShopEase-Server
