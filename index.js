@@ -3,7 +3,6 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-// const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const port = process.env.PORT || 5000;
@@ -12,36 +11,19 @@ const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "http://localhost:5174",
-    "https://shopease-37409.web.app",
-    "https://shopease-37409.firebaseapp.com",
+    "https://online-e-product.netlify.app"
   ],
   credentials: true,
   optionSuccessStatus: 200,
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-// Verify Token Middleware
-// const verifyToken = async (req, res, next) => {
-//   const token = req.cookies?.token;
-//   // console.log(token);
-//   if (!token) {
-//     return res.status(401).send({ message: "unauthorized access" });
-//   }
-//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-//     if (err) {
-//       console.log(err);
-//       return res.status(401).send({ message: "unauthorized access" });
-//     }
-//     req.user = decoded;
-//     next();
-//   });
-// };
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nrdgddr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = `mongodb+srv://${process.env.db_user}:${process.env.db_pass}@cluster0.3x1kphs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -49,12 +31,12 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  },
+  }
 });
 
 async function run() {
   try {
-    const db = client.db(`${process.env.DB_USER}`);
+    const db = client.db('online-shop');
     const userCollection = db.collection("users");
     const productCollection = db.collection("products");
 
@@ -67,7 +49,7 @@ async function run() {
     // auth related api
     app.post("/jwt", async (req, res) => {
       const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+      const token = jwt.sign(user, process.env.Access_Secret_Token, {
         expiresIn: "365d",
       });
       res

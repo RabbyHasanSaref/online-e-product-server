@@ -4,7 +4,7 @@
 This repository contains the backend implementation of the ShopEase application, a full-stack single-page web application designed for efficient product browsing. The backend handles data management, user authentication, and API routing to support the core functionalities of the front end, including pagination, searching, categorization, and sorting of products.
 
 ### Live Site URL: 
-* Firebase : [https://shopease-37409.web.app](https://shopease-37409.web.app)
+* https://online-e-product.netlify.app/
 
 ## How to Run Locally
 
