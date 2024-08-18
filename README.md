@@ -13,7 +13,7 @@ This repository contains the backend implementation of the online e-product appl
 git clone "https://github.com/RabbyHasanSaref/online-e-product-server.git"
 
 # 2. Navigate to the Project Directory
-cd ShopEase-Server
+cd online-e-product
 
 # 3. Install Dependencies
 npm install
